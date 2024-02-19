@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--MilkyWayOS manifest overlay-->
+<manifest>
+  <!-- Remotes -->
+  <remote name="gitlab" fetch="https://gitlab.com/"/>
+</manifest>

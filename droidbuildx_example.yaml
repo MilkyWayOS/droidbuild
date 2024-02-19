@@ -1,0 +1,7 @@
+# Example configuration for droidbuildx
+---
+sync:  # Section for setting-up repo
+  git_email: "git@github.com"
+  git_username: "git"
+  base_repo: "https://github.com/LineageOS/android.git"
+  base_repo_branch: "lineage-21.0"
