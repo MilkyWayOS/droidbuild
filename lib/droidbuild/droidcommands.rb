@@ -3,6 +3,7 @@ require 'droidmodule'
 require 'command'
 require 'sync/repo'
 require 'device/common'
+require 'keys/crypto'
 
 module Commands
   on_command "scan-modules" do
@@ -37,5 +38,14 @@ module Commands
       exit -1
     end
     Devices.build_device(codename)
+  end
+
+  on_command "generate-keys" do |argv|
+    if argv.length > 0
+      error "Extra arguments on command line"
+      exit -1
+    end
+    Configuration.load_configuration
+    generate_keys
   end
 end
