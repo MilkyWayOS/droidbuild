@@ -2,7 +2,7 @@
 
 def execute(cmdline)
   info "Execute: #{cmdline}"
-  result = system cmdline
+  result = system "bash -c '#{cmdline}'"
   unless result
     error "Failed to execute command"
     exit -1

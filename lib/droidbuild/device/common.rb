@@ -88,9 +88,7 @@ module Devices
     nproc = Configuration.get_value("build.nproc", `nproc`)
     do_sync_if_needed
     info "Starting build"
-    execute ". build/envsetup.sh"
-    execute "lunch lineage_#{codename}-#{TARGET_BUILDTYPE}"
-    execute "mka bacon -j$#{nproc}"
+    execute ". build/envsetup.sh; lunch lineage_#{codename}-#{TARGET_BUILD_TYPE}; mka bacon -j#{nproc}"
     success "Built unsigned OTA package succesfully"
   end
 
