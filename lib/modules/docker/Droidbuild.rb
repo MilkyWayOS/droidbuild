@@ -10,8 +10,11 @@ end
 
 def docker_shell
   buildroot = Configuration.get_value("storage.buildroot")
-  s
-  execute "docker run -it --entrypoint /bin/bash #{DOCKER_TAG}"
+  ota = Configuration.get_value("storage.ota")
+  execute "docker run -it \\
+            -v #{ota}:/opt/droid/buildroot/out_dir \\
+            -v #{buildroot}:/opt/droid/buildroot \\
+           --entrypoint /bin/bash #{DOCKER_TAG}"
 end
 
 module Commands
