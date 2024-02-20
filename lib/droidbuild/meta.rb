@@ -4,4 +4,4 @@ CODENAME = "mentha"
 DOCKER_TAG = "droidbuild:latest"
 
 # Global variables
-BASEDIR = `pwd`
+BASEDIR = "#{`pwd`}".strip
