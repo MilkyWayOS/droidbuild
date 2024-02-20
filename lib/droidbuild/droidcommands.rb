@@ -2,6 +2,7 @@ require 'droidbuild'
 require 'droidmodule'
 require 'command'
 require 'sync/repo'
+require 'device/common'
 
 module Commands
   on_command "scan-modules" do
@@ -19,5 +20,22 @@ module Commands
   on_command "sync" do
     Configuration.load_configuration
     synchronize_repo_and_tell_modules
+  end
+
+  on_command "build-device" do |argv|
+    if argv.length == 0
+      error "build-device needs exactly one argument"
+      exit -1
+    end
+    if argv.length > 1
+      error "Extra arguments on command line"
+      exit -1
+    end
+    codename = argv[0]
+    unless Devices.device_exists?(codename)
+      error "Can not find device with #{codename}. Maybe you need to re-scan modules?"
+      exit -1
+    end
+    Devices.build_device(codename)
   end
 end

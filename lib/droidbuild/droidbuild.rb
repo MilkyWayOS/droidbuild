@@ -5,6 +5,7 @@ require 'command'
 
 def find_and_load_modules
   modules_path_list = []
+  info "Scanning modules"
   Dir.glob("**/Droidbuild.rb").each do |fname|
     info "Including #{fname}"
     modules_path_list << fname

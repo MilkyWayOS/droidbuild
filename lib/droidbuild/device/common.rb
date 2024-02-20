@@ -108,22 +108,3 @@ module Devices
     end
   end
 end
-
-module Commands
-  on_command "build-device" do |argv|
-    if argv.length == 0
-      error "build-device needs exactly one argument"
-      exit -1
-    end
-    if argv.length > 1
-      error "Extra arguments on command line"
-      exit -1
-    end
-    codename = argv[0]
-    unless Devices.device_exists?(codename)
-      error "Can not find device with #{codename}. Maybe you need to re-scan modules?"
-      exit -1
-    end
-    Devices.build_device(codename)
-  end
-end
