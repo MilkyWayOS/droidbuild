@@ -5,6 +5,10 @@ require 'meta'
 require 'config'
 
 def build_docker
+  unless File.exist?(".droidbuildx.yaml")
+    error "Can not find config .droidbuildx.yaml"
+    exit -1
+  end
   execute "docker buildx build . -t #{DOCKER_TAG}"
 end
 

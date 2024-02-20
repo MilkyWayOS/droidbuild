@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 require 'log'
 require 'command'
+require 'config'
+require 'meta'
 
 class Device
   attr_reader :constants
@@ -64,12 +66,33 @@ module Devices
     @constant_defaults[key] = value
   end
 
+  def self.do_build_signed(codename)
+    matching_files = Dir.glob("*#{codename}*-signed-target-files*.zip")
+    last_target_files = matching_files.sort.last
+    error "Not yet implemented"
+    exit -1
+  end
+
+  def self.do_build_unsigned(codename)
+    nproc = Configuration.get_value("build.nproc", `nproc`)
+    info "Starting build"
+    execute ". build/envsetup.sh"
+    execute "lunch lineage_#{codename}-#{TARGET_BUILDTYPE}"
+    execute "mka bacon -j$#{nproc}"
+    success "Built unsigned OTA package succesfully"
+  end
+
   def self.build_device(codename)
     @devices[codename].constants.each do |name, value|
       const_set(name, value)
     end
     Droidbuild.modules.each do |_, mod|
       mod.on_before_build(codename)
+    end
+    if TARGET_SIGNED_BUILD
+      do_build_signed(codename)
+    else
+      do_build_unsigned(codename)
     end
   end
 end
