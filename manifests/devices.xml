@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <project name="MikyWayOS/droidbuild_device_hotdogb" path="droidbuild/device/hotdogb" remote="github"
+           revision="mentha"/>
+</manifest>
