@@ -3,6 +3,7 @@ require 'log'
 require 'command'
 require 'config'
 require 'meta'
+require 'sync/repo'
 
 class Device
   attr_reader :constants
@@ -24,7 +25,7 @@ module Devices
   @constant_defaults = {
     :TARGET_BUILD_TYPE => 'eng',
     :TARGET_LOCAL_MANIFESTS => [],
-    :TARGET_FULL_NAME => "Generic device",
+    :TARGET_FULL_NAME => 'Generic device',
     :TARGET_SIGNED_BUILD => false,
   }
 
@@ -73,8 +74,19 @@ module Devices
     exit -1
   end
 
+  def self.do_sync_if_needed
+    if TARGET_LOCAL_MANIFESTS.length > 0
+      info "Copying local manifests for target"
+      TARGET_LOCAL_MANIFESTS.each do |path|
+        execute "cp #{path} #{BASEDIR}/.repo/local_manifests/"
+      end
+      synchronize_repo_and_tell_modules
+    end
+  end
+
   def self.do_build_unsigned(codename)
     nproc = Configuration.get_value("build.nproc", `nproc`)
+    do_sync_if_needed
     info "Starting build"
     execute ". build/envsetup.sh"
     execute "lunch lineage_#{codename}-#{TARGET_BUILDTYPE}"

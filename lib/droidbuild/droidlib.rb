@@ -8,3 +8,5 @@ def execute(cmdline)
     exit -1
   end
 end
+
+GET_MY_DIR = "File.dirname(__FILE__)"
