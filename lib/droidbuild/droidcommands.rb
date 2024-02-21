@@ -48,4 +48,22 @@ module Commands
     Configuration.load_configuration
     generate_keys
   end
+
+  on_command "open-keys" do |argv|
+    if argv.length > 0
+      error "Extra arguments on command line"
+      exit -1
+    end
+    Configuration.load_configuration
+    open_keys
+  end
+
+  on_command "close-keys" do |argv|
+    if argv.length > 0
+      error "Extra arguments on command line"
+      exit -1
+    end
+    Configuration.load_configuration
+    close_keys
+  end
 end

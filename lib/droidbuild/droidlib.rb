@@ -20,4 +20,11 @@ def exit_dir
   Dir.chdir(BASEDIR)
 end
 
+def require_file(path)
+  unless File.exist? path
+    error "Can not find required file #{path}"
+    exit -1
+  end
+end
+
 GET_MY_DIR = "File.dirname(__FILE__)"
