@@ -4,6 +4,7 @@ require 'command'
 require 'config'
 require 'meta'
 require 'sync/repo'
+require 'keys/crypto'
 
 class Device
   attr_reader :constants
@@ -67,13 +68,6 @@ module Devices
     @constant_defaults[key] = value
   end
 
-  def self.do_build_signed(codename)
-    matching_files = Dir.glob("*#{codename}*-signed-target-files*.zip")
-    last_target_files = matching_files.sort.last
-    error "Not yet implemented"
-    exit -1
-  end
-
   def self.do_sync_if_needed
     if TARGET_LOCAL_MANIFESTS.length > 0
       info "Copying local manifests for target"
@@ -84,12 +78,60 @@ module Devices
     end
   end
 
+  def self.get_ota_meta_string(codename, keys="release-keys")
+    datetime=`date '+%Y%m%d_%H%M%S'`
+    "#{codename}-#{datetime}-#{TARGET_BUILD_TYPE}.#{keys}"
+  end
+
+  def self.prepare_signing
+    info "Preparing signing environment"
+    execute "rm -rf build/make/tools/framework"
+    execute "rm -rf build/make/tools/lib64"
+    execute "rm -rf build/make/tools/bin"
+    execute "cp -r out/host/linux-x86/framework build/make/tools/framework"
+    execute "cp -r out/host/linux-x86/lib64 build/make/tools/lib64"
+    execute "cp -r out/host/linux-x86/bin build/make/tools/bin"
+    success "Signing environment ready"
+  end
+
+  def self.do_build_signed(codename)
+    nproc = Configuration.get_value("build.nproc", `nproc`)
+    do_sync_if_needed
+    matching_files = Dir.glob("*#{codename}*-signed-target-files*.zip")
+    last_target_files = matching_files.sort.last
+    const_set :TARGET_META_STRING, get_ota_meta_string(codename)
+    open_keys
+    info "Starting build"
+    execute ". build/envsetup.sh; lunch lineage_#{codename}-#{TARGET_BUILD_TYPE}; mka target-files-package otatools -j#{nproc}"
+    success "Built target files package succesfully"
+    prepare_signing
+    target_name = "#{MODIFICATION_NAME}-#{TARGET_META_STRING}"
+    execute "sign_target_files_apks -o -d #{OPEN_KEYS_DIR}/android-certs #{BASEDIR}/out/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip #{OUT_DIR}/#{target_name}-signed-target_files.zip"
+    success "Signed files succesfully"
+    info "Building full OTA"
+    execute "ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-OTA-signed.zip"
+    success "Successfully built full OTA"
+    full_ota_path = "#{OUT_DIR}/#{target_name}-OTA-signed.zip"
+    incremental_ota_path = nil
+    unless last_target_files.nil?
+      info "Building incremental OTA"
+      exec "ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block -i #{last_target_files} #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-INCREMENTAL-OTA-signed.zip"
+      incremental_ota_path = "#{OUT_DIR}/#{target_name}-INCREMENTAL-OTA-signed.zip"
+    end
+    Droidbuild.modules.each do |_, mod|
+      mod.on_after_build(codename, full_ota_path, incremental_ota_path)
+    end
+  end
+
   def self.do_build_unsigned(codename)
     nproc = Configuration.get_value("build.nproc", `nproc`)
     do_sync_if_needed
     info "Starting build"
     execute ". build/envsetup.sh; lunch lineage_#{codename}-#{TARGET_BUILD_TYPE}; mka bacon -j#{nproc}"
     success "Built unsigned OTA package succesfully"
+    Droidbuild.modules.each do |_, mod|
+      mod.on_after_build(codename, nil, nil)
+    end
   end
 
   def self.build_device(codename)

@@ -14,3 +14,7 @@ KEY_SET = %w[releasekey cyngn-app media
 OPEN_KEYS_DIR = "#{BASEDIR}/.keys/"
 ## Where to store encrypted keys
 KEYSTORE_DIR = "#{BASEDIR}/out_dir"
+## Name of modification(for OTA naming)
+MODIFICATION_NAME = "MilkyWayOS"
+## Output directory
+OUT_DIR = "#{BASEDIR}/out_dir"
