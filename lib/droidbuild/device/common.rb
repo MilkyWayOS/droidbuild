@@ -79,7 +79,7 @@ module Devices
   end
 
   def self.get_ota_meta_string(codename, keys="release-keys")
-    datetime=`date '+%Y%m%d_%H%M%S'`
+    datetime="#{`date '+%Y%m%d_%H%M%S'`}".strip
     "#{codename}-#{datetime}-#{TARGET_BUILD_TYPE}.#{keys}"
   end
 
@@ -106,16 +106,17 @@ module Devices
     success "Built target files package succesfully"
     prepare_signing
     target_name = "#{MODIFICATION_NAME}-#{TARGET_META_STRING}"
-    execute "sign_target_files_apks -o -d #{OPEN_KEYS_DIR}/android-certs #{BASEDIR}/out/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip #{OUT_DIR}/#{target_name}-signed-target_files.zip"
+    target_files_list = Dir.glob("#{BASEDIR}/out/target/product/#{codename}/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip")
+    execute ". build/envsetup.sh; sign_target_files_apks -o -d #{OPEN_KEYS_DIR}/android-certs #{list_to_arguments(target_files_list)} #{OUT_DIR}/#{target_name}-signed-target_files.zip"
     success "Signed files succesfully"
     info "Building full OTA"
-    execute "ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-OTA-signed.zip"
+    execute ". build/envsetup.sh; ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-OTA-signed.zip"
     success "Successfully built full OTA"
     full_ota_path = "#{OUT_DIR}/#{target_name}-OTA-signed.zip"
     incremental_ota_path = nil
     unless last_target_files.nil?
       info "Building incremental OTA"
-      exec "ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block -i #{last_target_files} #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-INCREMENTAL-OTA-signed.zip"
+      exec ". build/envsetup.sh; ota_from_target_files --skip_compatibility_check -v -k #{OPEN_KEYS_DIR}/android-certs/releasekey --block -i #{last_target_files} #{OUT_DIR}/#{target_name}-signed-target_files.zip #{OUT_DIR}/#{target_name}-INCREMENTAL-OTA-signed.zip"
       incremental_ota_path = "#{OUT_DIR}/#{target_name}-INCREMENTAL-OTA-signed.zip"
     end
     Droidbuild.modules.each do |_, mod|

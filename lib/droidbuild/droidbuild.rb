@@ -3,6 +3,8 @@ require 'droidmodule'
 require 'droidcommands'
 require 'command'
 
+ENV["PATH"] = "#{ENV["PATH"]}:#{BASEDIR}/out/host/linux-x86/bin"
+
 def find_and_load_modules
   modules_path_list = []
   info "Scanning modules"

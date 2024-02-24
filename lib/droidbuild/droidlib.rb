@@ -27,4 +27,13 @@ def require_file(path)
   end
 end
 
+def list_to_arguments(list)
+  result = ""
+  list.each do |s|
+    result += s
+    result += ' '
+  end
+  result
+end
+
 GET_MY_DIR = "File.dirname(__FILE__)"
