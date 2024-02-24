@@ -3,4 +3,12 @@
 <manifest>
   <!-- Remotes -->
   <remote name="gitlab" fetch="https://gitlab.com/"/>
+  <!-- Remove projects -->
+  <remove-project name="LineageOS/android_bootable_recovery" />
+  <remove-project name="LineageOS/android_frameworks_base" />
+  <!-- MilkyWayOS projects -->
+  <project name="MilkyWayOS/android_frameworks_base" path="frameworks/base"
+           revision="mentha" remote="github" />
+  <project name="MilkyWayOS/android_bootable_recovery" path="bootable/recovery"
+           revision="mentha" remote="github" />
 </manifest>
