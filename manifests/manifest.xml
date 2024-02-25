@@ -3,12 +3,17 @@
 <manifest>
   <!-- Remotes -->
   <remote name="gitlab" fetch="https://gitlab.com/"/>
-  <!-- Remove projects -->
+  <!-- Remove projects we override -->
   <remove-project name="LineageOS/android_bootable_recovery" />
   <remove-project name="LineageOS/android_frameworks_base" />
+  <remove-project name="LineageOS/android_bionic" />
   <!-- MilkyWayOS projects -->
   <project name="MilkyWayOS/android_frameworks_base" path="frameworks/base"
            revision="mentha" remote="github" />
   <project name="MilkyWayOS/android_bootable_recovery" path="bootable/recovery"
+           revision="mentha" remote="github" />
+  <project name="MilkyWayOS/android_bionic" path="bionic"
+           revision="mentha" remote="github" />
+  <project name="MilkyWayOS/android_external_hardened_malloc" path="external/hardened_malloc"
            revision="mentha" remote="github" />
 </manifest>
