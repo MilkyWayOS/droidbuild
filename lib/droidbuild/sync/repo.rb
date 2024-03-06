@@ -7,7 +7,7 @@ def synchronize_repo
   info "Synchronizing repos"
   git_username = Configuration.get_value("sync.git_username")
   git_email = Configuration.get_value("sync.git_email")
-  nproc = Configuration.get_value("common.nproc", `nproc`)
+  nproc = Configuration.get_value("sync.nproc", `nproc`)
   base_repo = Configuration.get_value("sync.base_repo")
   base_repo_branch = Configuration.get_value("sync.base_repo_branch")
   execute "git config --global user.email '#{git_email}'"
