@@ -18,7 +18,7 @@
   <project name="MilkyWayOS/android_external_hardened_malloc" path="external/hardened_malloc"
            revision="mentha" remote="github" />
   <project path="build/soong" name="MilkyWayOS/android_build_soong"
-           groups="pdk,tradefed" revision="mentha">
+           groups="pdk,tradefed" revision="mentha-legacy">
     <linkfile src="root.bp" dest="Android.bp"/>
     <linkfile src="bootstrap.bash" dest="bootstrap.bash"/>
   </project>
